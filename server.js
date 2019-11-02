@@ -20,4 +20,5 @@ server.get('/', (req, res) => {
     res.send("I'm a teapot!");
 });
 
+// Export server
 module.exports = server;
