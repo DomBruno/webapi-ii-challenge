@@ -79,62 +79,93 @@ const db = require('../data/db.js');
 // POST Request Handlers
 // The server needs to create the object, so we use async
 
-// POST Blog Post
-router.post('/', async (req, res) => {
-    const blogPost = {...req.body};
+        // POST Blog Post
+        router.post('/', async (req, res) => {
+            const blogPost = {...req.body};
+
+            try {
+                const post = await db.insert(blogPost);
+
+                if (!title || !contents) {
+                    res
+                    .status(400)
+                    .json({message: 'Please provide title and contents for the post.',});
+                } else {
+                res
+                .status(201)
+                .json(post);
+            } 
+                } catch (err) {
+                console.log(err);
+                res
+                .status(500)
+                .json({message: 'There was an error while saving the post to the database.',});
+            }
+            });
+
+        // POST Blog Comemnt
+        router.post('/:id/comments', async (req, res) => {
+            const commentPost = {...req.body, postId: req.params.id };
+
+            if( !commentPost.text ) {
+                return res
+                .status(400)
+                .json({
+                Message: 'Please provide text for the comment.',});
+            }
+
+            try {
+                const comment = await db.insertComment(commentPost);
+
+                if (!postId) {
+                    res
+                    .status(404)
+                    .json({message: 'The post with the specified ID does not exist.',});
+                } else {
+                    res
+                    .status(201)
+                    .json(comment);
+                }
+            } catch (err) {
+                console.log(err);
+                res
+                .status(500)
+                .json({message: 'There was an error while saving the comment to the database.',});
+            }
+            });
+
+// DELETE Request Handlers
+// Using async/await as the server has to take action
+
+// DELETE a Post by Id
+router.delete('/:id', async (req, res) => {
+    const postId = req.params.id;
 
     try {
-        const post = await db.insert(blogPost);
-
-        if (!title || !contents) {
-            res
-            .status(400)
-            .json({message: 'Please provide title and contents for the post.',});
-        } else {
-        res
-        .status(201)
-        .json(post);
-    } 
-        } catch (err) {
-        console.log(err);
-        res
-        .status(500)
-        .json({message: 'There was an error while saving the post to the database.',});
-    }
-    })
-
-router.post('/:id/comments', async (req, res) => {
-    const commentPost = {...req.body, postId: req.params.id };
-
-    if( !commentPost.text ) {
-        return res
-        .status(400)
-        .json({
-          errorMessage: "Please provide text for the comment"
-        })
-      }
-
-    try {
-        const comment = await db.insertComment(commentPost);
-
+        const deletedPost = await db.findById(postId);
+        
         if (!postId) {
-            res
-            .status(404)
+            res.status(404)
             .json({message: 'The post with the specified ID does not exist.',});
         } else {
+            await db.remove(postId);
             res
-            .status(201)
-            .json(comment);
+            .status(200)
+            .json(deletedPost);
         }
     } catch (err) {
         console.log(err);
         res
         .status(500)
-        .json({message: 'There was an error while saving the comment to the database',});
+        .json({message: 'The post could not be removed.'});
     }
-    })
-    
-    
+   });
+
+// PUT Request Handlers
+// Using sync/await as the server has to take action
+
+// PUT Update Post by Id
+route
 })
 })
 
