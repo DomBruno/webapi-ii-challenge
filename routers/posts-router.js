@@ -23,7 +23,7 @@ const db = require('../data/db.js');
                         message: 'The posts information could not be retrieved.',
                     });
                 });
-
+            })
         // GET post by Id
         router.get('/:id', (req, res) => {
             db.findById(req.params.id)
@@ -40,7 +40,7 @@ const db = require('../data/db.js');
                         .json(post);
                     }
                 })
-                .catch(error => {
+            .catch(error => {
                     // log error to database
                     console.log(error);
                     res
@@ -76,6 +76,7 @@ const db = require('../data/db.js');
                         message: 'The comments information could not be retrieved.',
                     });
             });
+        });
 
 // POST Request Handlers
 // The server needs to create the object, so we use async
@@ -194,8 +195,7 @@ const db = require('../data/db.js');
                 .json({message: 'The post information could not be modified.',});
             }
             })
-        })
-        });
-
+        
+    
 
 module.exports = router;
