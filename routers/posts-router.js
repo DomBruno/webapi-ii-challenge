@@ -23,7 +23,7 @@ const db = require('../data/db.js');
                         message: 'The posts information could not be retrieved.',
                     });
                 });
-
+            })
         // GET post by Id
         router.get('/:id', (req, res) => {
             db.findById(req.params.id)
@@ -40,7 +40,7 @@ const db = require('../data/db.js');
                         .json(post);
                     }
                 })
-                .catch(error => {
+            .catch(error => {
                     // log error to database
                     console.log(error);
                     res
@@ -48,6 +48,7 @@ const db = require('../data/db.js');
                     .json({
                         message: 'The post information could not be retrieved.',
                     });
+                })
         });
 
         // GET comment by postId
@@ -75,6 +76,7 @@ const db = require('../data/db.js');
                         message: 'The comments information could not be retrieved.',
                     });
             });
+        });
 
 // POST Request Handlers
 // The server needs to create the object, so we use async
@@ -86,7 +88,7 @@ const db = require('../data/db.js');
             try {
                 const post = await db.insert(blogPost);
 
-                if (!title || !contents) {
+                if (!blogPost.title || !blogPost.contents) {
                     res
                     .status(400)
                     .json({message: 'Please provide title and contents for the post.',});
@@ -137,65 +139,63 @@ const db = require('../data/db.js');
 // DELETE Request Handlers
 // Using async/await as the server has to take action
 
-// DELETE a Post by Id
-router.delete('/:id', async (req, res) => {
-    const postId = req.params.id;
+        // DELETE a Post by Id
+        router.delete('/:id', async (req, res) => {
+            const postId = req.params.id;
 
-    try {
-        const deletedPost = await db.findById(postId);
-        
-        if (!postId) {
-            res.status(404)
-            .json({message: 'The post with the specified ID does not exist.',});
-        } else {
-            await db.remove(postId);
-            res
-            .status(200)
-            .json(deletedPost);
-        }
-    } catch (err) {
-        console.log(err);
-        res
-        .status(500)
-        .json({message: 'The post could not be removed.'});
-    }
-   });
+            try {
+                const deletedPost = await db.findById(postId);
+                
+                if (!postId) {
+                    res.status(404)
+                    .json({message: 'The post with the specified ID does not exist.',});
+                } else {
+                    await db.remove(postId);
+                    res
+                    .status(200)
+                    .json(deletedPost);
+                }
+            } catch (err) {
+                console.log(err);
+                res
+                .status(500)
+                .json({message: 'The post could not be removed.',});
+            }
+        });
 
 // PUT Request Handlers
 // Using sync/await as the server has to take action
 
-// PUT Update Post by Id
-router.put(':/id', async (req, res) => {
-    const updatePost = {...req.body, postId: req.params.id };
-    if( !updatePost.title || !updatePost.contents ) {
-        return res
-        .status(400)
-        .json({
-        Message: 'Please provide title and contents for the post.',});
-    }
+        // PUT Update Post by Id
+        router.put('/:id', async (req, res) => {
+            const updatePost = {...req.body, postId: req.params.id };
+            if( !updatePost.title || !updatePost.contents ) {
+                return res
+                .status(400)
+                .json({
+                Message: 'Please provide title and contents for the post.',});
+            }
 
-    try {
-        const update = await db.update(updatePost);
+            try {
+                const update = await db.update(updatePost);
 
-        if (!postId) {
-            res
-            .status(404)
-            .json({message: 'The post with the specified ID does not exist.',});
-        } else {
-            res
-            .status(201)
-            .json(update);
-        }
-    } catch (err) {
-        console.log(err);
-        res
-        .status(500)
-        .json({message: 'The post information could not be modified.',});
-    }
-    })
-})
-        })
-    })
-
+                if (!postId) {
+                    res
+                    .status(404)
+                    .json({message: 'The post with the specified ID does not exist.',});
+                } else {
+                    res
+                    .status(201)
+                    .json(update);
+                }
+            } catch (err) {
+                console.log(err);
+                res
+                .status(500)
+                .json({message: 'The post information could not be modified.',});
+            }
+            })
+        
+    
 
 module.exports = router;
