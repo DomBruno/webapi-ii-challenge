@@ -48,6 +48,7 @@ const db = require('../data/db.js');
                     .json({
                         message: 'The post information could not be retrieved.',
                     });
+                })
         });
 
         // GET comment by postId
@@ -194,8 +195,7 @@ const db = require('../data/db.js');
             }
             })
         })
-        })
-    });
+        });
 
 
 module.exports = router;
