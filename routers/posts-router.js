@@ -157,7 +157,7 @@ const db = require('../data/db.js');
                 console.log(err);
                 res
                 .status(500)
-                .json({message: 'The post could not be removed.'});
+                .json({message: 'The post could not be removed.',});
             }
         });
 
